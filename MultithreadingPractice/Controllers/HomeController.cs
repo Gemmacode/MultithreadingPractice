@@ -1,58 +1,67 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 public class HomeController : Controller
 {
+    private static Queue<TaskItem> taskQueue = new Queue<TaskItem>();
+
     public IActionResult Index()
     {
-        return View();
+        return View(taskQueue);
     }
 
     public async Task<IActionResult> StartTask1()
     {
-        ViewBag.Task1Status = "Running";
-        ViewBag.Task1Progress = 0;
-
-        // Show progress bar
-        ViewBag.ShowTask1ProgressBar = true;
-
-        await Task.Run(() => SimulateTask("Task 1", 5, percentage => ViewBag.Task1Progress = percentage));
-
-        // Hide progress bar after completion
-        ViewBag.ShowTask1ProgressBar = false;
-        ViewBag.Task1Status = "Completed";
-
-        return View("Index");
+        var task = new TaskItem("Task 1", 5);
+        taskQueue.Enqueue(task);
+        await RunTaskAsync(task);
+        return RedirectToAction("Index");
     }
 
     public async Task<IActionResult> StartTask2()
     {
-        ViewBag.Task2Status = "Running";
-        ViewBag.Task2Progress = 0;
-
-        // Show progress bar
-        ViewBag.ShowTask2ProgressBar = true;
-
-        await Task.Run(() => SimulateTask("Task 2", 3, percentage => ViewBag.Task2Progress = percentage));
-
-        // Hide progress bar after completion
-        ViewBag.ShowTask2ProgressBar = false;
-        ViewBag.Task2Status = "Completed";
-
-        return View("Index");
+        var task = new TaskItem("Task 2", 3);
+        taskQueue.Enqueue(task);
+        await RunTaskAsync(task);
+        return RedirectToAction("Index");
     }
 
-    private void SimulateTask(string taskName, int iterations, Action<int> updateProgress)
+    private async Task RunTaskAsync(TaskItem task)
     {
-        for (int i = 1; i <= iterations; i++)
-        {
-            Console.WriteLine($"{taskName}: Iteration {i}");
-            System.Threading.Thread.Sleep(1000); // Simulate time-consuming work
+        task.Status = TaskStatus.Running;
+        await Task.Run(() => SimulateTask(task));
+        task.Status = TaskStatus.Completed;
+    }
 
-            // Update progress
-            int percentage = (i * 100) / iterations;
-            updateProgress(percentage);
+    private void SimulateTask(TaskItem task)
+    {
+        for (int i = 1; i <= task.Iterations; i++)
+        {
+            Console.WriteLine($"{task.Name}: Iteration {i}");
+            System.Threading.Thread.Sleep(1000); // Simulate time-consuming work
         }
     }
+}
+
+public class TaskItem
+{
+    public string Name { get; set; }
+    public int Iterations { get; set; }
+    public TaskStatus Status { get; set; }
+
+    public TaskItem(string name, int iterations)
+    {
+        Name = name;
+        Iterations = iterations;
+        Status = TaskStatus.NotStarted;
+    }
+}
+
+public enum TaskStatus
+{
+    NotStarted,
+    Running,
+    Completed
 }
