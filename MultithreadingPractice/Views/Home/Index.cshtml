@@ -1,0 +1,98 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Multithreading Demo";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form id="startTask1Form" asp-controller="Home" asp-action="StartTask1" method="post">
+    <button type="button" onclick="startTask('startTask1Form', 'task1')">Start Task 1</button>
+    <div id="task1Progress" class="progress-bar-container">
+        <div id="task1ProgressBar" class="progress-bar"></div>
+    </div>
+    <p id="task1Status">Task 1 Status: Not started</p>
+</form>
+
+<form id="startTask2Form" asp-controller="Home" asp-action="StartTask2" method="post">
+    <button type="button" onclick="startTask('startTask2Form', 'task2')">Start Task 2</button>
+    <div id="task2Progress" class="progress-bar-container">
+        <div id="task2ProgressBar" class="progress-bar"></div>
+    </div>
+    <p id="task2Status">Task 2 Status: Not started</p>
+</form>
+
+@* Styles for the progress bars *@
+<style>
+    .progress-bar-container {
+        width: 200px;
+        height: 20px;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 5px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0;
+        background-color: #4caf50;
+        transition: width 0.5s ease-in-out;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    p {
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
+
+@* JavaScript for dynamic updates *@
+<script>
+    function startTask(formId, taskName) {
+        var form = document.getElementById(formId);
+        var progressBar = document.getElementById(taskName + "ProgressBar");
+        var statusElement = document.getElementById(taskName + "Status");
+
+        // Show progress bar
+        progressBar.style.width = "0%";
+        progressBar.style.backgroundColor = "#4caf50";
+        statusElement.innerText = "Running";
+
+        // Use Ajax to start the task and get updates
+        $.ajax({
+            type: "POST",
+            url: form.action,
+            success: function () {
+                // Task completed
+                progressBar.style.width = "100%";
+                statusElement.innerText = "Completed";
+                setTimeout(function () {
+                    // Hide progress bar after a delay
+                    progressBar.style.width = "0%";
+                    statusElement.innerText = "Not started";
+                }, 1000);
+            },
+            error: function () {
+                // Handle error if needed
+                progressBar.style.width = "0%";
+                statusElement.innerText = "Error";
+            }
+        });
+    }
+</script>
