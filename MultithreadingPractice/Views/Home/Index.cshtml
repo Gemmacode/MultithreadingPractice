@@ -6,27 +6,79 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form id="startTask1Form" asp-controller="Home" asp-action="StartTask1" method="post">
-    <button type="button" onclick="startTask('startTask1Form', 'task1')">Start Task 1</button>
-</form>
+<div class="task-buttons">
+    <form id="startTask1Form" asp-controller="Home" asp-action="StartTask1" method="post">
+        <button type="button" onclick="startTask('startTask1Form', 'task1')">Start Task 1</button>
+    </form>
 
-<form id="startTask2Form" asp-controller="Home" asp-action="StartTask2" method="post">
-    <button type="button" onclick="startTask('startTask2Form', 'task2')">Start Task 2</button>
-</form>
+    <form id="startTask2Form" asp-controller="Home" asp-action="StartTask2" method="post">
+        <button type="button" onclick="startTask('startTask2Form', 'task2')">Start Task 2</button>
+    </form>
+</div>
 
-<div>
+<div class="task-queue">
     <h3>Task Queue</h3>
     <ul>
         @foreach (var task in Model)
         {
             <li>
-                @task.Name - @task.Status
+                <strong>@task.Name:</strong>
+                <span class="status">@task.Status</span>
+                <span class="progress">@task.Progress%</span>
             </li>
         }
     </ul>
 </div>
 
-@* JavaScript for dynamic updates *@
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 20px;
+    }
+
+    .task-buttons {
+        margin-bottom: 20px;
+    }
+
+    button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .task-queue {
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+
+    .status {
+        margin-left: 10px;
+        font-weight: bold;
+    }
+
+    .progress {
+        margin-left: 10px;
+        color: #4caf50;
+    }
+</style>
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>

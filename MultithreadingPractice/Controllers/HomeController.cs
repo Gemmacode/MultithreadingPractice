@@ -50,12 +50,14 @@ public class TaskItem
     public string Name { get; set; }
     public int Iterations { get; set; }
     public TaskStatus Status { get; set; }
+    public int Progress { get; set; } // Add this line
 
     public TaskItem(string name, int iterations)
     {
         Name = name;
         Iterations = iterations;
         Status = TaskStatus.NotStarted;
+        Progress = 0; // Add this line to initialize progress
     }
 }
 
